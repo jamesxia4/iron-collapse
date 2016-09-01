@@ -169,11 +169,6 @@ Custom property | Description | Default
       transitionend: '_transitionEnd'
     },
 
-    attached: function() {
-      // It will take care of setting correct classes and styles.
-      this._transitionEnd();
-    },
-
     /**
      * Toggle the opened state.
      *
@@ -199,20 +194,12 @@ Custom property | Description | Default
     updateSize: function(size, animated) {
       // Consider 'auto' as '', to take full size.
       size = size === 'auto' ? '' : size;
-      // No change!
-      if (this._desiredSize === size) {
-        return;
-      }
+
+      var willAnimate = animated && !this.noAnimation && this.isAttached && this._desiredSize !== size;
 
       this._desiredSize = size;
 
-      // Set the stored desired size after the element is attached.
-      if (!this.isAttached) {
-        return;
-      }
-
       this._updateTransition(false);
-      var willAnimate = animated && !this.noAnimation;
       // If we can animate, must do some prep work.
       if (willAnimate) {
         // Animation will start at the current size.
@@ -240,7 +227,7 @@ Custom property | Description | Default
         this._transitionEnd();
       }
     },
-    
+
     /**
      * enableTransition() is deprecated, but left over so it doesn't break existing code.
      * Please use `noAnimation` property instead.
